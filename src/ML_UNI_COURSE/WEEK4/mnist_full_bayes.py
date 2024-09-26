@@ -52,20 +52,18 @@ def mean_cov_class(train = x_train, label = y_train):
 mean_class, cov_class = mean_cov_class(x_train, y_train)
 mean_class, cov_class = np.asarray(mean_class), np.asarray(cov_class)
 
-def MAP(row, mean, var):
-    likelihoods = []
+# Function that classifies
+def MAP(test, mean, var):
+    likelihoods = np.zeros((10, len(test)))
     for k in range(0, 10):    
-        likelihoods.append(multivariate_normal.logpdf(row, mean[k,:], var[k,:]))
+        likelihoods[k,:] = (multivariate_normal.logpdf(test, mean[k], var[k]))
     
-    return np.argmax(likelihoods)
+    return np.argmax(likelihoods, axis=0)
 
-### DUE TO POOR CPU, THE BEST I CAN DO IS 500 TEST SAMPLES ###
-predictions = [] 
-for sample in range(0, 500):
-    preds = MAP(x_test[sample, :], mean_class, cov_class)
-    predictions.append(preds)
-    
+##Predictions
+predictions = MAP(x_test, mean_class, cov_class)
+
 # Evaluating the performance
-accuracy = class_acc(predictions,y_test[:500])
+accuracy = class_acc(predictions,y_test)
 print(f"Classification accuracy is {accuracy}")
 
